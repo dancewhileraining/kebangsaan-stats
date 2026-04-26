@@ -1,0 +1,455 @@
+/* Kebangsaan Statistics v2.1 — light + dark mode */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ─── Theme variables (light defaults) ─── */
+.kbgs-root {
+    /* surfaces */
+    --kbgs-bg:            transparent;
+    --kbgs-surface:       #ffffff;
+    --kbgs-surface-alt:   #f8fafc;
+    --kbgs-surface-zebra: #fafbfc;
+    --kbgs-surface-hover: #f1f5f9;
+
+    /* borders */
+    --kbgs-border:        #e2e8f0;
+    --kbgs-border-soft:   #f1f5f9;
+    --kbgs-border-strong: #cbd5e1;
+
+    /* text */
+    --kbgs-text:          #202124;
+    --kbgs-text-strong:   #1e293b;
+    --kbgs-text-muted:    #64748b;
+    --kbgs-text-faint:    #94a3b8;
+    --kbgs-text-head:     #374151;
+
+    /* accents */
+    --kbgs-accent:        #1967d2;
+    --kbgs-accent-hover:  #e8f0fe;
+    --kbgs-accent-shadow: rgba(25,103,210,.3);
+    --kbgs-accent-ring:   rgba(25,103,210,.1);
+
+    /* stat cards */
+    --kbgs-stat-datang-bg:     #eff6ff;
+    --kbgs-stat-datang-border: #bfdbfe;
+    --kbgs-stat-datang-value:  #1d4ed8;
+    --kbgs-stat-berangkat-bg:     #f0fdf4;
+    --kbgs-stat-berangkat-border: #bbf7d0;
+    --kbgs-stat-berangkat-value:  #15803d;
+
+    /* numbers */
+    --kbgs-num-datang:    #1d4ed8;
+    --kbgs-num-berangkat: #15803d;
+
+    /* search icon */
+    --kbgs-search-icon:   '%239ca3af';
+
+    /* tab pill */
+    --kbgs-pill-bg:       #f1f5f9;
+    --kbgs-pill-border:   #e2e8f0;
+
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    color: var(--kbgs-text);
+    line-height: 1.5;
+    background: var(--kbgs-bg);
+}
+
+/* ─── Dark theme: JNews Dark Mode Switcher ─── */
+/* .jnews-dark-mode on <html> = JNews Dark Mode Switcher plugin (confirmed)
+   .jeg_dark_mode  on <body>  = JNews theme built-in toggle (fallback)
+   JS watcher in script.js is the primary mechanism; this is the CSS fallback. */
+html.jnews-dark-mode .kbgs-root,
+body.jeg_dark_mode .kbgs-root,
+html.jeg_dark_mode .kbgs-root {
+    --kbgs-bg:            transparent;
+    --kbgs-surface:       #1e2530;
+    --kbgs-surface-alt:   #232b38;
+    --kbgs-surface-zebra: #222a36;
+    --kbgs-surface-hover: #2a3442;
+
+    --kbgs-border:        #364152;
+    --kbgs-border-soft:   #2b3443;
+    --kbgs-border-strong: #475569;
+
+    --kbgs-text:          #e5e7eb;
+    --kbgs-text-strong:   #f1f5f9;
+    --kbgs-text-muted:    #94a3b8;
+    --kbgs-text-faint:    #64748b;
+    --kbgs-text-head:     #cbd5e1;
+
+    --kbgs-accent:        #60a5fa;
+    --kbgs-accent-hover:  #1e293b;
+    --kbgs-accent-shadow: rgba(96,165,250,.35);
+    --kbgs-accent-ring:   rgba(96,165,250,.18);
+
+    --kbgs-stat-datang-bg:     #152033;
+    --kbgs-stat-datang-border: #1e3a8a;
+    --kbgs-stat-datang-value:  #93c5fd;
+    --kbgs-stat-berangkat-bg:     #0f2417;
+    --kbgs-stat-berangkat-border: #166534;
+    --kbgs-stat-berangkat-value:  #86efac;
+
+    --kbgs-num-datang:    #93c5fd;
+    --kbgs-num-berangkat: #86efac;
+
+    --kbgs-search-icon:   '%2394a3b8';
+
+    --kbgs-pill-bg:       #232b38;
+    --kbgs-pill-border:   #364152;
+}
+
+/* ─── Top bar: year tabs left, search right ─── */
+.kbgs-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* ─── Year tabs ─── */
+.kbgs-year-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.kbgs-year-tab {
+    background: var(--kbgs-pill-bg);
+    border: 1.5px solid var(--kbgs-pill-border);
+    border-radius: 8px;
+    padding: 8px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--kbgs-text-muted);
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+}
+.kbgs-year-tab:hover  { background: var(--kbgs-surface-hover); color: var(--kbgs-text-strong); }
+.kbgs-year-tab.active {
+    background: var(--kbgs-accent);
+    border-color: var(--kbgs-accent);
+    color: #fff;
+    box-shadow: 0 2px 8px var(--kbgs-accent-shadow);
+}
+
+/* ─── Year panels ─── */
+.kbgs-year-panel         { display: none !important; }
+.kbgs-year-panel.active  { display: block !important; }
+
+/* ─── Search ─── */
+.kbgs-search {
+    border: 1.5px solid var(--kbgs-border);
+    border-radius: 8px;
+    padding: 8px 16px 8px 38px;
+    font-size: 13.5px;
+    width: 240px;
+    outline: none;
+    color: var(--kbgs-text);
+    background-color: var(--kbgs-surface);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 13px center;
+    transition: border-color .2s, box-shadow .2s;
+}
+.kbgs-search::placeholder { color: var(--kbgs-text-faint); }
+.kbgs-search:focus { border-color: var(--kbgs-accent); box-shadow: 0 0 0 3px var(--kbgs-accent-ring); }
+
+/* ─── Month tabs ─── */
+.kbgs-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--kbgs-border);
+    margin-bottom: 0;
+    width: 100%;
+}
+.kbgs-tab {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--kbgs-text-muted);
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s, background .15s;
+}
+.kbgs-tab:hover  { background: var(--kbgs-surface-hover); color: var(--kbgs-text-strong); }
+.kbgs-tab.active { color: var(--kbgs-accent); border-bottom-color: var(--kbgs-accent); font-weight: 600; }
+
+/* ─── Month panel ─── */
+.kbgs-panel        { display: none !important; }
+.kbgs-panel.active { display: block !important; }
+
+/* ─── Dashboard cards ─── */
+.kbgs-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 24px 0 22px;
+    width: 100%;
+}
+.kbgs-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 24px 32px;
+    border-radius: 12px;
+}
+.kbgs-stat-datang    { background: var(--kbgs-stat-datang-bg);    border: 1px solid var(--kbgs-stat-datang-border); }
+.kbgs-stat-berangkat { background: var(--kbgs-stat-berangkat-bg); border: 1px solid var(--kbgs-stat-berangkat-border); }
+.kbgs-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--kbgs-text-muted);
+}
+.kbgs-stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.5px;
+}
+.kbgs-stat-datang    .kbgs-stat-value { color: var(--kbgs-stat-datang-value); }
+.kbgs-stat-berangkat .kbgs-stat-value { color: var(--kbgs-stat-berangkat-value); }
+.kbgs-stat-sub { font-size: 12px; color: var(--kbgs-text-faint); }
+
+/* ─── Table wrap ─── */
+.kbgs-table-wrap {
+    width: 100% !important;
+    overflow-x: auto;
+    border: 1px solid var(--kbgs-border);
+    border-radius: 10px;
+    background: var(--kbgs-surface);
+}
+
+/* ─── Table ─── */
+.kbgs-table {
+    width: 100% !important;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--kbgs-surface);
+    color: var(--kbgs-text);
+    table-layout: auto;
+}
+
+.kbgs-table thead tr th {
+    background: var(--kbgs-surface-alt);
+    font-weight: 700;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--kbgs-text-head);
+    padding: 14px 24px;
+    border-bottom: 2px solid var(--kbgs-border);
+    border-right: 1px solid var(--kbgs-border-soft);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.kbgs-table thead tr th:last-child { border-right: none; }
+
+.kbgs-th-no        { text-align: center !important; }
+.kbgs-th-kb        { text-align: left !important; }
+.kbgs-th-datang    { text-align: right !important; cursor: pointer; user-select: none; }
+.kbgs-th-berangkat { text-align: right !important; cursor: pointer; user-select: none; }
+.kbgs-th-datang:hover, .kbgs-th-berangkat:hover { background: var(--kbgs-accent-hover); color: var(--kbgs-accent); }
+.kbgs-si { opacity: .4; font-size: 10px; margin-left: 4px; }
+
+.kbgs-table tbody tr { border-bottom: 1px solid var(--kbgs-border-soft); }
+.kbgs-table tbody tr:last-child { border-bottom: none; }
+.kbgs-table tbody tr:hover { background: var(--kbgs-surface-alt); }
+.kbgs-table tbody tr:nth-child(even) { background: var(--kbgs-surface-zebra); }
+.kbgs-table tbody tr:nth-child(even):hover { background: var(--kbgs-surface-hover); }
+
+.kbgs-table td {
+    padding: 11px 24px;
+    border-right: 1px solid var(--kbgs-border-soft);
+    vertical-align: middle;
+    color: var(--kbgs-text);
+}
+.kbgs-table td:last-child { border-right: none; }
+
+.kbgs-td-no {
+    text-align: center;
+    color: var(--kbgs-text-faint);
+    font-size: 13px;
+}
+.kbgs-td-kb {
+    text-align: left;
+    font-weight: 500;
+    color: var(--kbgs-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.kbgs-num-datang {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--kbgs-num-datang);
+    font-weight: 500;
+    white-space: nowrap;
+}
+.kbgs-num-berangkat {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--kbgs-num-berangkat);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.kbgs-table tfoot tr { background: var(--kbgs-surface-alt); border-top: 2px solid var(--kbgs-border-strong); }
+.kbgs-table tfoot td { padding: 12px 24px; border-right: 1px solid var(--kbgs-border); font-weight: 700; }
+.kbgs-table tfoot td:last-child { border-right: none; }
+.kbgs-foot-label { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--kbgs-text-head); }
+.kbgs-foot-num { font-size: 14px; }
+
+/* ─── Export bar (below table) ─── */
+.kbgs-export-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.kbgs-btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s, filter .15s;
+    letter-spacing: .01em;
+}
+.kbgs-btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.kbgs-btn-export:active { transform: translateY(0); }
+
+.kbgs-btn-excel {
+    background: linear-gradient(135deg, #1d6f42 0%, #21a366 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(29,111,66,.35);
+}
+.kbgs-btn-excel:hover { filter: brightness(1.08); }
+
+.kbgs-btn-pdf {
+    background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(185,28,28,.35);
+}
+.kbgs-btn-pdf:hover { filter: brightness(1.08); }
+
+/* ─── Hidden rows ─── */
+.kbgs-hidden { display: none !important; }
+
+/* ─── JNews dark mode hard overrides ───────────────────────────────────────
+   html.jnews-dark-mode = JNews Dark Mode Switcher plugin  ← PRIMARY
+   html/body.jeg_dark_mode = JNews theme built-in toggle   ← FALLBACK
+   Uses :is() so the selector list only needs to be written once per rule.  */
+
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-root {
+    color: var(--kbgs-text) !important;
+    background: transparent !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table-wrap,
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table {
+    background: var(--kbgs-surface) !important;
+    color: var(--kbgs-text) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table thead tr th {
+    background: var(--kbgs-surface-alt) !important;
+    color: var(--kbgs-text-head) !important;
+    border-color: var(--kbgs-border) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table tbody tr {
+    background: var(--kbgs-surface) !important;
+    border-color: var(--kbgs-border-soft) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table tbody tr:nth-child(even) {
+    background: var(--kbgs-surface-zebra) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table tbody tr:hover {
+    background: var(--kbgs-surface-hover) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table td {
+    color: var(--kbgs-text) !important;
+    border-color: var(--kbgs-border-soft) !important;
+    background: transparent !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-td-no { color: var(--kbgs-text-faint)  !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-td-kb { color: var(--kbgs-text-strong) !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-num-datang    { color: var(--kbgs-num-datang)    !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-num-berangkat { color: var(--kbgs-num-berangkat) !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table tfoot tr {
+    background: var(--kbgs-surface-alt) !important;
+    border-color: var(--kbgs-border-strong) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-table tfoot td {
+    color: var(--kbgs-text-head) !important;
+    border-color: var(--kbgs-border) !important;
+    background: transparent !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-datang {
+    background: var(--kbgs-stat-datang-bg) !important;
+    border-color: var(--kbgs-stat-datang-border) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-berangkat {
+    background: var(--kbgs-stat-berangkat-bg) !important;
+    border-color: var(--kbgs-stat-berangkat-border) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-datang    .kbgs-stat-value { color: var(--kbgs-stat-datang-value)    !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-berangkat .kbgs-stat-value { color: var(--kbgs-stat-berangkat-value) !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-label { color: var(--kbgs-text-muted) !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-stat-sub   { color: var(--kbgs-text-faint) !important; }
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-year-tab {
+    background: var(--kbgs-pill-bg) !important;
+    border-color: var(--kbgs-pill-border) !important;
+    color: var(--kbgs-text-muted) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-year-tab.active {
+    background: var(--kbgs-accent) !important;
+    border-color: var(--kbgs-accent) !important;
+    color: #fff !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-tab {
+    color: var(--kbgs-text-muted) !important;
+    background: transparent !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-tab.active {
+    color: var(--kbgs-accent) !important;
+    border-bottom-color: var(--kbgs-accent) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-tabs {
+    border-bottom-color: var(--kbgs-border) !important;
+}
+:is(html.jnews-dark-mode, html.jeg_dark_mode, body.jeg_dark_mode) .kbgs-search {
+    background-color: var(--kbgs-surface) !important;
+    color: var(--kbgs-text) !important;
+    border-color: var(--kbgs-border) !important;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 700px) {
+    .kbgs-topbar { flex-direction: column; align-items: flex-start; }
+    .kbgs-search { width: 100%; }
+    .kbgs-dashboard { grid-template-columns: 1fr; }
+    .kbgs-stat-value { font-size: 28px; }
+    .kbgs-tab { padding: 9px 12px; font-size: 13px; }
+    .kbgs-export-bar { justify-content: stretch; }
+    .kbgs-btn-export { flex: 1; justify-content: center; }
+}
