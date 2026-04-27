@@ -142,7 +142,9 @@ function kbgs_upload_page() {
 
     <script>
     function kbgsToggleUploadType(val) {
-        document.getElementById('kbgs-row-month').style.display = (val === 'month') ? '' : 'none';
+        var isMonth = (val === 'month');
+        document.getElementById('kbgs-row-month').style.display = isMonth ? '' : 'none';
+        document.getElementById('kbgs_month').required = isMonth;
     }
     </script>
     <?php
