@@ -6,16 +6,19 @@
  * Author: Imigrasi Ngurah Rai
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined('ABSPATH')) {
+    exit;
+}
 
-define( 'KBGS_VERSION', '2.4.3' );
-define( 'KBGS_PATH',    plugin_dir_path( __FILE__ ) );
-define( 'KBGS_URL',     plugin_dir_url( __FILE__ ) );
-define( 'KBGS_TABLE',   'kbgs_data' );
+define('KBGS_VERSION', '2.4.3');
+define('KBGS_PATH', plugin_dir_path(__FILE__));
+define('KBGS_URL', plugin_dir_url(__FILE__));
+define('KBGS_TABLE', 'kbgs_data');
 
 /* ── INSTALL ── */
-register_activation_hook( __FILE__, 'kbgs_install' );
-function kbgs_install() {
+register_activation_hook(__FILE__, 'kbgs_install');
+function kbgs_install()
+{
     global $wpdb;
     $t  = $wpdb->prefix . KBGS_TABLE;
     $cs = $wpdb->get_charset_collate();
@@ -29,29 +32,39 @@ function kbgs_install() {
         UNIQUE KEY ym_kb (year, month, kebangsaan)
     ) $cs;";
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta( $sql );
+    dbDelta($sql);
 }
 
 /* ── ADMIN MENU ── */
-add_action( 'admin_menu', 'kbgs_admin_menu' );
-function kbgs_admin_menu() {
+add_action('admin_menu', 'kbgs_admin_menu');
+function kbgs_admin_menu()
+{
     add_menu_page(
-        'Statistik Kebangsaan', 'Statistik Kebangsaan', 'edit_others_posts',
-        'kbgs-upload', 'kbgs_upload_page', 'dashicons-chart-bar', 30
+        'Statistik Kebangsaan',
+        'Statistik Kebangsaan',
+        'edit_others_posts',
+        'kbgs-upload',
+        'kbgs_upload_page',
+        'dashicons-chart-bar',
+        30
     );
-    add_submenu_page( 'kbgs-upload', 'Upload Data', 'Upload Data', 'edit_others_posts', 'kbgs-upload', 'kbgs_upload_page' );
-    add_submenu_page( 'kbgs-upload', 'Kelola Data', 'Kelola Data', 'edit_others_posts', 'kbgs-manage', 'kbgs_manage_page' );
+    add_submenu_page('kbgs-upload', 'Upload Data', 'Upload Data', 'edit_others_posts', 'kbgs-upload', 'kbgs_upload_page');
+    add_submenu_page('kbgs-upload', 'Kelola Data', 'Kelola Data', 'edit_others_posts', 'kbgs-manage', 'kbgs_manage_page');
 }
 
 /* ── UPLOAD PAGE ── */
-function kbgs_upload_page() {
-    $msg = ''; $type = 'info';
-    if ( isset($_POST['kbgs_nonce']) && wp_verify_nonce($_POST['kbgs_nonce'], 'kbgs_upload') ) {
-        if ( ! empty($_FILES['kbgs_file']['tmp_name']) ) {
-            $r = kbgs_process_upload( $_FILES['kbgs_file'] );
-            $msg = $r['message']; $type = $r['success'] ? 'success' : 'error';
+function kbgs_upload_page()
+{
+    $msg = '';
+    $type = 'info';
+    if (isset($_POST['kbgs_nonce']) && wp_verify_nonce($_POST['kbgs_nonce'], 'kbgs_upload')) {
+        if (! empty($_FILES['kbgs_file']['tmp_name'])) {
+            $r = kbgs_process_upload($_FILES['kbgs_file']);
+            $msg = $r['message'];
+            $type = $r['success'] ? 'success' : 'error';
         } else {
-            $msg = 'Pilih file Excel (.xlsx) terlebih dahulu.'; $type = 'error';
+            $msg = 'Pilih file Excel (.xlsx) terlebih dahulu.';
+            $type = 'error';
         }
     }
     $lb = kbgs_labels();
@@ -65,7 +78,7 @@ function kbgs_upload_page() {
 
         <div style="background:#fff;border:1px solid #ccd0d4;border-radius:6px;padding:28px;max-width:620px;margin-top:18px">
             <form method="post" enctype="multipart/form-data" id="kbgs-upload-form">
-                <?php wp_nonce_field('kbgs_upload','kbgs_nonce'); ?>
+                <?php wp_nonce_field('kbgs_upload', 'kbgs_nonce'); ?>
                 <table class="form-table">
 
                     <!-- Upload type -->
@@ -102,7 +115,7 @@ function kbgs_upload_page() {
                     <tr id="kbgs-row-month" style="display:none">
                         <th><label for="kbgs_month">Bulan</label></th>
                         <td>
-                            <select name="kbgs_month" id="kbgs_month" required>
+                            <select name="kbgs_month" id="kbgs_month">
                                 <option value="">— Pilih Bulan —</option>
                                 <?php foreach ($lb as $num => $name): ?>
                                 <option value="<?php echo $num; ?>"><?php echo esc_html($name); ?></option>
@@ -141,26 +154,42 @@ function kbgs_upload_page() {
     </div>
 
     <script>
+<<<<<<< HEAD
     function kbgsToggleUploadType(val) {
         var isMonth = (val === 'month');
         document.getElementById('kbgs-row-month').style.display = isMonth ? '' : 'none';
         document.getElementById('kbgs_month').required = isMonth;
+=======
+        function kbgsToggleUploadType(val) {
+        const row    = document.getElementById('kbgs-row-month');
+        const select = document.getElementById('kbgs_month');
+        const isMonth = val === 'month';
+        row.style.display  = isMonth ? '' : 'none';
+        select.disabled    = !isMonth;
+        select.required    = isMonth;
+>>>>>>> 6d1dc43 (Remove hardcoded  from the month select HTML and toggle it)
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const checked = document.querySelector('input[name="kbgs_upload_type"]:checked');
+        if (checked) kbgsToggleUploadType(checked.value);
+    });
     </script>
     <?php
 }
 
 /* ── MANAGE PAGE ── */
-function kbgs_manage_page() {
+function kbgs_manage_page()
+{
     global $wpdb;
     $t = $wpdb->prefix . KBGS_TABLE;
-    if ( isset($_POST['kbgs_del_nonce']) && wp_verify_nonce($_POST['kbgs_del_nonce'],'kbgs_delete') ) {
-        $year = intval($_POST['del_year']); $month = intval($_POST['del_month']);
+    if (isset($_POST['kbgs_del_nonce']) && wp_verify_nonce($_POST['kbgs_del_nonce'], 'kbgs_delete')) {
+        $year = intval($_POST['del_year']);
+        $month = intval($_POST['del_month']);
         if ($month === 0) {
-            $wpdb->delete($t,['year'=>$year],['%d']);
+            $wpdb->delete($t, ['year' => $year], ['%d']);
             echo '<div class="notice notice-success is-dismissible"><p>Data tahun '.$year.' dihapus.</p></div>';
         } else {
-            $wpdb->delete($t,['year'=>$year,'month'=>$month],['%d','%d']);
+            $wpdb->delete($t, ['year' => $year,'month' => $month], ['%d','%d']);
             $lb = kbgs_labels();
             echo '<div class="notice notice-success is-dismissible"><p>Data '.esc_html($lb[$month]).' '.$year.' dihapus.</p></div>';
         }
@@ -184,7 +213,7 @@ function kbgs_manage_page() {
             <td><?php echo number_format($r->tb); ?></td>
             <td>
                 <form method="post" style="display:inline" onsubmit="return confirm('Hapus data ini?')">
-                    <?php wp_nonce_field('kbgs_delete','kbgs_del_nonce'); ?>
+                    <?php wp_nonce_field('kbgs_delete', 'kbgs_del_nonce'); ?>
                     <input type="hidden" name="del_year"  value="<?php echo esc_attr($r->year); ?>">
                     <input type="hidden" name="del_month" value="<?php echo esc_attr($r->month); ?>">
                     <button type="submit" class="button button-small button-link-delete">Hapus</button>
@@ -199,61 +228,70 @@ function kbgs_manage_page() {
 }
 
 /* ── PROCESS UPLOAD ── */
-function kbgs_process_upload( $file ) {
+function kbgs_process_upload($file)
+{
     $year        = intval($_POST['kbgs_year'] ?? date('Y'));
     $mode        = sanitize_text_field($_POST['kbgs_mode'] ?? 'replace');
     $upload_type = sanitize_text_field($_POST['kbgs_upload_type'] ?? 'year');
 
-    if ( strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) !== 'xlsx' )
-        return ['success'=>false,'message'=>'Hanya file .xlsx yang didukung.'];
+    if (strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) !== 'xlsx') {
+        return ['success' => false,'message' => 'Hanya file .xlsx yang didukung.'];
+    }
 
     global $wpdb;
     $t  = $wpdb->prefix . KBGS_TABLE;
     $lb = kbgs_labels();
 
     /* ── Single-month upload ── */
-    if ( $upload_type === 'month' ) {
+    if ($upload_type === 'month') {
         $month = intval($_POST['kbgs_month'] ?? date('n'));
-        if ( $month < 1 || $month > 12 )
-            return ['success'=>false,'message'=>'Pilih bulan yang valid.'];
+        if ($month < 1 || $month > 12) {
+            return ['success' => false,'message' => 'Pilih bulan yang valid.'];
+        }
 
         $rows = kbgs_parse_xlsx_single($file['tmp_name']);
-        if ( empty($rows) )
-            return ['success'=>false,'message'=>'Tidak ada data terbaca dari file. Pastikan header KEBANGSAAN / KEDATANGAN / KEBERANGKATAN ada di sheet.'];
+        if (empty($rows)) {
+            return ['success' => false,'message' => 'Tidak ada data terbaca dari file. Pastikan header KEBANGSAAN / KEDATANGAN / KEBERANGKATAN ada di sheet.'];
+        }
 
-        $wpdb->delete($t, ['year'=>$year,'month'=>$month], ['%d','%d']);
+        $wpdb->delete($t, ['year' => $year,'month' => $month], ['%d','%d']);
         foreach ($rows as $row) {
-            $wpdb->replace($t,[
-                'year'=>$year,'month'=>$month,
-                'kebangsaan'=>$row['kebangsaan'],
-                'datang'=>$row['datang'],
-                'berangkat'=>$row['berangkat'],
-            ],['%d','%d','%s','%d','%d']);
+            $wpdb->replace($t, [
+                'year' => $year,'month' => $month,
+                'kebangsaan' => $row['kebangsaan'],
+                'datang' => $row['datang'],
+                'berangkat' => $row['berangkat'],
+            ], ['%d','%d','%s','%d','%d']);
         }
         $mn = $lb[$month] ?? $month;
-        return ['success'=>true,'message'=>"Berhasil! ".count($rows)." baris disimpan untuk {$mn} {$year}."];
+        return ['success' => true,'message' => "Berhasil! ".count($rows)." baris disimpan untuk {$mn} {$year}."];
     }
 
     /* ── Full-year upload (existing behaviour) ── */
     $data = kbgs_parse_xlsx($file['tmp_name']);
-    if ( empty($data) )
-        return ['success'=>false,'message'=>'Tidak ada data terbaca. Pastikan nama sheet sesuai (Jan, Feb, Mar, ...).'];
+    if (empty($data)) {
+        return ['success' => false,'message' => 'Tidak ada data terbaca. Pastikan nama sheet sesuai (Jan, Feb, Mar, ...).'];
+    }
 
-    if ($mode === 'replace') $wpdb->delete($t,['year'=>$year],['%d']);
+    if ($mode === 'replace') {
+        $wpdb->delete($t, ['year' => $year], ['%d']);
+    }
     $inserted = 0;
     foreach ($data as $m => $rows) {
-        if ($mode === 'merge') $wpdb->delete($t,['year'=>$year,'month'=>$m],['%d','%d']);
+        if ($mode === 'merge') {
+            $wpdb->delete($t, ['year' => $year,'month' => $m], ['%d','%d']);
+        }
         foreach ($rows as $row) {
-            $wpdb->replace($t,[
-                'year'=>$year,'month'=>$m,
-                'kebangsaan'=>$row['kebangsaan'],
-                'datang'=>$row['datang'],
-                'berangkat'=>$row['berangkat'],
-            ],['%d','%d','%s','%d','%d']);
+            $wpdb->replace($t, [
+                'year' => $year,'month' => $m,
+                'kebangsaan' => $row['kebangsaan'],
+                'datang' => $row['datang'],
+                'berangkat' => $row['berangkat'],
+            ], ['%d','%d','%s','%d','%d']);
             $inserted++;
         }
     }
-    return ['success'=>true,'message'=>"Berhasil! {$inserted} baris dari ".count($data)." bulan disimpan untuk tahun {$year}."];
+    return ['success' => true,'message' => "Berhasil! {$inserted} baris dari ".count($data)." bulan disimpan untuk tahun {$year}."];
 }
 
 /* ── XLSX PARSER (pure PHP / ZipArchive) ──
@@ -265,15 +303,18 @@ function kbgs_process_upload( $file ) {
  * Also uses relationship file to correctly map sheet names to XML files,
  * regardless of file numbering order.
  * ─────────────────────────────────────────── */
-function kbgs_parse_xlsx( $path ) {
+function kbgs_parse_xlsx($path)
+{
     $month_map = [
-        'jan'=>1,'feb'=>2,'mar'=>3,'apr'=>4,'mei'=>5,'may'=>5,
-        'jun'=>6,'jul'=>7,'agu'=>8,'aug'=>8,'sep'=>9,
-        'okt'=>10,'oct'=>10,'nov'=>11,'des'=>12,'dec'=>12
+        'jan' => 1,'feb' => 2,'mar' => 3,'apr' => 4,'mei' => 5,'may' => 5,
+        'jun' => 6,'jul' => 7,'agu' => 8,'aug' => 8,'sep' => 9,
+        'okt' => 10,'oct' => 10,'nov' => 11,'des' => 12,'dec' => 12
     ];
 
     $zip = new ZipArchive();
-    if ($zip->open($path) !== true) return [];
+    if ($zip->open($path) !== true) {
+        return [];
+    }
 
     // 1. Shared strings — parse per <si> to handle rich-text entries correctly
     $strings = [];
@@ -304,20 +345,30 @@ function kbgs_parse_xlsx( $path ) {
         foreach ($sm[1] as $i => $name) {
             $rid  = $sm[2][$i];
             $file = $rid_to_file[$rid] ?? null;
-            if ($file) $sheet_files[strtolower(trim($name))] = $file;
+            if ($file) {
+                $sheet_files[strtolower(trim($name))] = $file;
+            }
         }
     }
 
     // 4. Parse each monthly sheet
     $result = [];
     foreach ($month_map as $sname => $mnum) {
-        if (isset($result[$mnum])) continue; // already parsed this month
+        if (isset($result[$mnum])) {
+            continue;
+        } // already parsed this month
         $file = $sheet_files[$sname] ?? null;
-        if (!$file) continue;
+        if (!$file) {
+            continue;
+        }
         $xml = $zip->getFromName('xl/' . $file);
-        if (!$xml) continue;
+        if (!$xml) {
+            continue;
+        }
         $rows = kbgs_parse_sheet($xml, $strings);
-        if (!empty($rows)) $result[$mnum] = $rows;
+        if (!empty($rows)) {
+            $result[$mnum] = $rows;
+        }
     }
 
     $zip->close();
@@ -331,9 +382,12 @@ function kbgs_parse_xlsx( $path ) {
  *   2. Fall back to trying every non-system sheet until we get rows
  *   3. Last resort: first sheet
  */
-function kbgs_parse_xlsx_single( $path ) {
+function kbgs_parse_xlsx_single($path)
+{
     $zip = new ZipArchive();
-    if ($zip->open($path) !== true) return [];
+    if ($zip->open($path) !== true) {
+        return [];
+    }
 
     // Shared strings — parse per <si> to handle rich-text entries correctly
     $strings = [];
@@ -351,7 +405,9 @@ function kbgs_parse_xlsx_single( $path ) {
     $rels_xml = $zip->getFromName('xl/_rels/workbook.xml.rels');
     if ($rels_xml) {
         preg_match_all('/Id="(rId\d+)"[^>]*Target="(worksheets\/sheet\d+\.xml)"/', $rels_xml, $rm);
-        foreach ($rm[1] as $i => $rid) $rid_map[$rid] = $rm[2][$i];
+        foreach ($rm[1] as $i => $rid) {
+            $rid_map[$rid] = $rm[2][$i];
+        }
     }
 
     // Build ordered list: sheet name → file, in workbook order
@@ -362,7 +418,9 @@ function kbgs_parse_xlsx_single( $path ) {
         foreach ($sm[1] as $i => $name) {
             $rid  = $sm[2][$i];
             $file = $rid_map[$rid] ?? null;
-            if ($file) $sheets_ordered[$name] = $file;
+            if ($file) {
+                $sheets_ordered[$name] = $file;
+            }
         }
     }
 
@@ -383,22 +441,36 @@ function kbgs_parse_xlsx_single( $path ) {
         foreach ($sheets_ordered as $name => $file) {
             $skip = false;
             foreach ($system_prefixes as $pfx) {
-                if (stripos($name, $pfx) === 0) { $skip = true; break; }
+                if (stripos($name, $pfx) === 0) {
+                    $skip = true;
+                    break;
+                }
             }
-            if ($skip) continue;
+            if ($skip) {
+                continue;
+            }
             $xml = $zip->getFromName('xl/' . $file);
-            if (!$xml) continue;
+            if (!$xml) {
+                continue;
+            }
             $rows = kbgs_parse_sheet($xml, $strings);
-            if (!empty($rows)) { $zip->close(); return $rows; }
+            if (!empty($rows)) {
+                $zip->close();
+                return $rows;
+            }
         }
     }
 
     // 3. Last resort: first sheet
-    if (!$target_file) $target_file = reset($sheets_ordered) ?: 'worksheets/sheet1.xml';
+    if (!$target_file) {
+        $target_file = reset($sheets_ordered) ?: 'worksheets/sheet1.xml';
+    }
 
     $xml = $zip->getFromName('xl/' . $target_file);
     $zip->close();
-    if (!$xml) return [];
+    if (!$xml) {
+        return [];
+    }
     return $use_rekap_parser
         ? kbgs_parse_rekap_sheet($xml, $strings)
         : kbgs_parse_sheet($xml, $strings);
@@ -412,19 +484,24 @@ function kbgs_parse_xlsx_single( $path ) {
  *   I283      = Total Kedatangan
  *   J283      = Total Keberangkatan  (read but not stored — DB totals are computed)
  */
-function kbgs_parse_rekap_sheet( $xml, $strings ) {
+function kbgs_parse_rekap_sheet($xml, $strings)
+{
     $grid = [];
 
     preg_match_all('/<row[^>]+r="(\d+)"[^>]*>(.*?)<\/row>/s', $xml, $rm);
     foreach ($rm[1] as $idx => $row_num) {
         $rn      = (int) $row_num;
-        if ($rn < 13 || $rn > 283) continue;   // only rows we care about
+        if ($rn < 13 || $rn > 283) {
+            continue;
+        }   // only rows we care about
         $row_xml = $rm[2][$idx];
         $row_xml = preg_replace('/<c\s[^>]*\/>/s', '', $row_xml);
         preg_match_all('/<c\s+r="([A-Z]+)(\d+)"([^>]*)>(.*?)<\/c>/s', $row_xml, $cm, PREG_SET_ORDER);
         foreach ($cm as $cell) {
             $col  = $cell[1];
-            if (!in_array($col, ['C','I','J'])) continue;
+            if (!in_array($col, ['C','I','J'])) {
+                continue;
+            }
             $attrs = $cell[3];
             $inner = $cell[4];
             $is_s  = (bool) preg_match('/\bt="s"/', $attrs);
@@ -440,9 +517,13 @@ function kbgs_parse_rekap_sheet( $xml, $strings ) {
     $out = [];
     for ($r = 13; $r <= 282; $r++) {
         $kb = trim($grid[$r]['C'] ?? '');
-        if (!$kb || is_numeric($kb)) continue;
+        if (!$kb || is_numeric($kb)) {
+            continue;
+        }
         $up = strtoupper($kb);
-        if (in_array($up, ['KEBANGSAAN','NO','JUMLAH','TOTAL'])) continue;
+        if (in_array($up, ['KEBANGSAAN','NO','JUMLAH','TOTAL'])) {
+            continue;
+        }
         $dt = $grid[$r]['I'] ?? '0';
         $br = $grid[$r]['J'] ?? '0';
         $out[] = [
@@ -454,7 +535,8 @@ function kbgs_parse_rekap_sheet( $xml, $strings ) {
     return $out;
 }
 
-function kbgs_parse_sheet( $xml, $strings ) {
+function kbgs_parse_sheet($xml, $strings)
+{
     $grid = [];
 
     // Parse row by row
@@ -509,11 +591,17 @@ function kbgs_parse_sheet( $xml, $strings ) {
     // Scan rows near header for KEDATANGAN / KEBERANGKATAN
     if ($header_row) {
         for ($r = $header_row; $r <= $header_row + 5; $r++) {
-            if (!isset($grid[$r])) continue;
+            if (!isset($grid[$r])) {
+                continue;
+            }
             foreach ($grid[$r] as $col => $val) {
                 $up = strtoupper(trim($val));
-                if ($up === 'KEDATANGAN'  && !$col_dt) $col_dt = $col;
-                if ($up === 'KEBERANGKATAN' && !$col_br) $col_br = $col;
+                if ($up === 'KEDATANGAN'  && !$col_dt) {
+                    $col_dt = $col;
+                }
+                if ($up === 'KEBERANGKATAN' && !$col_br) {
+                    $col_br = $col;
+                }
             }
         }
         // If both landed on the same column (merged-cell header edge case),
@@ -527,13 +615,17 @@ function kbgs_parse_sheet( $xml, $strings ) {
     // (e.g. header at B but country names are at C). Verify against first data row.
     if ($header_row && $col_kb) {
         foreach ($grid as $rn => $cols) {
-            if ($rn <= $header_row + 3) continue;
+            if ($rn <= $header_row + 3) {
+                continue;
+            }
             $v = trim($cols[$col_kb] ?? '');
             // If col_kb has a number instead of a country name, try the next column
             if ($v !== '' && is_numeric($v)) {
                 $next = chr(ord($col_kb) + 1);
                 $v2   = trim($cols[$next] ?? '');
-                if ($v2 !== '' && !is_numeric($v2)) $col_kb = $next;
+                if ($v2 !== '' && !is_numeric($v2)) {
+                    $col_kb = $next;
+                }
             }
             break;
         }
@@ -542,27 +634,44 @@ function kbgs_parse_sheet( $xml, $strings ) {
     // Find first real data row: col_kb = non-numeric string, col_dt/col_br = numeric
     $data_start = 0;
     foreach ($grid as $rn => $cols) {
-        if ($header_row && $rn <= $header_row + 3) continue; // skip header area
+        if ($header_row && $rn <= $header_row + 3) {
+            continue;
+        } // skip header area
         $kb = trim($cols[$col_kb] ?? '');
         $dt = trim($cols[$col_dt] ?? '');
         $br = trim($cols[$col_br] ?? '');
-        if (!$kb || is_numeric($kb)) continue;
+        if (!$kb || is_numeric($kb)) {
+            continue;
+        }
         $up = strtoupper($kb);
-        if (in_array($up, ['KEBANGSAAN','NO','JUMLAH'])) continue;
-        if (is_numeric($dt) || is_numeric($br)) { $data_start = $rn; break; }
+        if (in_array($up, ['KEBANGSAAN','NO','JUMLAH'])) {
+            continue;
+        }
+        if (is_numeric($dt) || is_numeric($br)) {
+            $data_start = $rn;
+            break;
+        }
     }
 
-    if (!$data_start) return [];
+    if (!$data_start) {
+        return [];
+    }
 
     $out = [];
     foreach ($grid as $rn => $cols) {
-        if ($rn < $data_start) continue;
+        if ($rn < $data_start) {
+            continue;
+        }
         $kb = trim($cols[$col_kb] ?? '');
         $dt = trim($cols[$col_dt] ?? '0');
         $br = trim($cols[$col_br] ?? '0');
-        if (!$kb || is_numeric($kb)) continue;
+        if (!$kb || is_numeric($kb)) {
+            continue;
+        }
         $up = strtoupper($kb);
-        if (in_array($up, ['JUMLAH','KEBANGSAAN','NO'])) continue;
+        if (in_array($up, ['JUMLAH','KEBANGSAAN','NO'])) {
+            continue;
+        }
         $out[] = [
             'kebangsaan' => strtoupper($kb),
             'datang'     => intval(floatval($dt)),
@@ -573,8 +682,9 @@ function kbgs_parse_sheet( $xml, $strings ) {
 }
 
 /* ── SHORTCODE ── */
-add_shortcode( 'kebangsaan_stats', 'kbgs_shortcode' );
-function kbgs_shortcode( $atts ) {
+add_shortcode('kebangsaan_stats', 'kbgs_shortcode');
+function kbgs_shortcode($atts)
+{
     $atts = shortcode_atts([
         'year'          => null,               // lock to a single year (optional)
         'default_year'  => null,               // which year tab opens first
@@ -590,15 +700,19 @@ function kbgs_shortcode( $atts ) {
     if ($atts['year']) {
         $years = [intval($atts['year'])];
     } else {
-        $years = array_map('intval',
+        $years = array_map(
+            'intval',
             $wpdb->get_col("SELECT DISTINCT year FROM {$t} ORDER BY year DESC")
         );
     }
-    if (empty($years))
+    if (empty($years)) {
         return '<p style="color:#888;font-style:italic">Data statistik belum tersedia.</p>';
+    }
 
     $defy = $atts['default_year'] ? intval($atts['default_year']) : $years[0];
-    if (!in_array($defy, $years)) $defy = $years[0];
+    if (!in_array($defy, $years)) {
+        $defy = $years[0];
+    }
 
     /* ── Fetch all data in one query ── */
     $placeholders = implode(',', array_fill(0, count($years), '%d'));
@@ -610,15 +724,17 @@ function kbgs_shortcode( $atts ) {
         )
     );
     $by = [];  /* $by[year][month][] = row */
-    foreach ($all as $row) $by[$row->year][$row->month][] = $row;
+    foreach ($all as $row) {
+        $by[$row->year][$row->month][] = $row;
+    }
 
     $uid = 'kbgs_' . uniqid();
 
-    wp_enqueue_style(  'kbgs-style',     KBGS_URL . 'assets/style.css', [], KBGS_VERSION );
-    wp_enqueue_script( 'kbgs-xlsx',      'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', [], '0.20.3', true );
-    wp_enqueue_script( 'kbgs-jspdf',     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', [], '2.5.1', true );
-    wp_enqueue_script( 'kbgs-autotable', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js', ['kbgs-jspdf'], '3.8.2', true );
-    wp_enqueue_script( 'kbgs-script',    KBGS_URL . 'assets/script.js', ['kbgs-xlsx','kbgs-autotable'], KBGS_VERSION, true );
+    wp_enqueue_style('kbgs-style', KBGS_URL . 'assets/style.css', [], KBGS_VERSION);
+    wp_enqueue_script('kbgs-xlsx', 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', [], '0.20.3', true);
+    wp_enqueue_script('kbgs-jspdf', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', [], '2.5.1', true);
+    wp_enqueue_script('kbgs-autotable', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js', ['kbgs-jspdf'], '3.8.2', true);
+    wp_enqueue_script('kbgs-script', KBGS_URL . 'assets/script.js', ['kbgs-xlsx','kbgs-autotable'], KBGS_VERSION, true);
 
     ob_start();
     ?>
@@ -629,10 +745,10 @@ function kbgs_shortcode( $atts ) {
             <div class="kbgs-year-tabs" role="tablist" aria-label="Pilih tahun">
             <?php foreach ($years as $y): ?>
             <button
-                class="kbgs-year-tab <?php echo $y==$defy?'active':''; ?>"
+                class="kbgs-year-tab <?php echo $y == $defy ? 'active' : ''; ?>"
                 data-year="<?php echo esc_attr($y); ?>"
                 role="tab"
-                aria-selected="<?php echo $y==$defy?'true':'false'; ?>"
+                aria-selected="<?php echo $y == $defy ? 'true' : 'false'; ?>"
                 onclick="kbgsYearTab(this,'<?php echo esc_attr($uid); ?>')">
                 <?php echo esc_html($y); ?>
             </button>
@@ -646,17 +762,17 @@ function kbgs_shortcode( $atts ) {
             $avail_m = array_keys($by[$y] ?? []);
             sort($avail_m);
             $active_m = in_array($defm, $avail_m) ? $defm : ($avail_m[0] ?? 1);
-        ?>
-        <div class="kbgs-year-panel <?php echo $y==$defy?'active':''; ?>" data-year="<?php echo esc_attr($y); ?>">
+            ?>
+        <div class="kbgs-year-panel <?php echo $y == $defy ? 'active' : ''; ?>" data-year="<?php echo esc_attr($y); ?>">
 
             <!-- Month tabs -->
             <div class="kbgs-tabs" role="tablist">
                 <?php foreach ($avail_m as $m): ?>
                 <button
-                    class="kbgs-tab <?php echo $m==$active_m?'active':''; ?>"
+                    class="kbgs-tab <?php echo $m == $active_m ? 'active' : ''; ?>"
                     role="tab"
                     data-month="<?php echo esc_attr($m); ?>"
-                    aria-selected="<?php echo $m==$active_m?'true':'false'; ?>"
+                    aria-selected="<?php echo $m == $active_m ? 'true' : 'false'; ?>"
                     onclick="kbgsTab(this,'<?php echo esc_attr($uid); ?>')">
                     <?php echo esc_html($labels[$m] ?? $m); ?>
                 </button>
@@ -668,8 +784,8 @@ function kbgs_shortcode( $atts ) {
                 $rows  = $by[$y][$m] ?? [];
                 $tot_d = array_sum(array_column($rows, 'datang'));
                 $tot_b = array_sum(array_column($rows, 'berangkat'));
-            ?>
-            <div class="kbgs-panel <?php echo $m==$active_m?'active':''; ?>" data-month="<?php echo esc_attr($m); ?>">
+                ?>
+            <div class="kbgs-panel <?php echo $m == $active_m ? 'active' : ''; ?>" data-month="<?php echo esc_attr($m); ?>">
 
                 <!-- Dashboard -->
                 <div class="kbgs-dashboard">
@@ -705,7 +821,7 @@ function kbgs_shortcode( $atts ) {
                         <tbody>
                         <?php foreach ($rows as $i => $row): ?>
                             <tr>
-                                <td class="kbgs-td-no"><?php echo $i+1; ?></td>
+                                <td class="kbgs-td-no"><?php echo $i + 1; ?></td>
                                 <td class="kbgs-td-kb"><?php echo esc_html(ucwords(strtolower($row->kebangsaan))); ?></td>
                                 <td class="kbgs-num-datang"><?php echo number_format($row->datang); ?></td>
                                 <td class="kbgs-num-berangkat"><?php echo number_format($row->berangkat); ?></td>
@@ -752,7 +868,8 @@ function kbgs_shortcode( $atts ) {
 }
 
 /* ── HELPERS ── */
-function kbgs_labels() {
-    return [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
-            7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+function kbgs_labels()
+{
+    return [1 => 'Januari',2 => 'Februari',3 => 'Maret',4 => 'April',5 => 'Mei',6 => 'Juni',
+            7 => 'Juli',8 => 'Agustus',9 => 'September',10 => 'Oktober',11 => 'November',12 => 'Desember'];
 }
